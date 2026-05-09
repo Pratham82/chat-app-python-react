@@ -25,25 +25,23 @@ import asyncio
 
 
 async def save_message(content: str, delay: float) -> str:
-    # TODO: simulate DB write — sleep for `delay` seconds, then return "saved"
-    pass
+    await asyncio.sleep(delay)
+    return "message saved"
 
 
-async def save_with_timeout(content: str, delay: float):
-    print(f"Saving message (delay={delay}s)...")
-    # TODO:
-    # try:
-    #     result = await asyncio.wait_for(save_message(...), timeout=2.0)
-    #     print(...)
-    # except asyncio.TimeoutError:
-    #     print(...)
-    pass
+async def save_with_timeout(content: str, delay: float, label: str):
+    print(f"Saving message ({label}s)...")
+    try:
+        await asyncio.wait_for(save_message(content, delay), timeout=2.0)
+        print("message saved")
+    except TimeoutError:
+        print("DB timeout — message not saved")
 
 
 async def main():
-    await save_with_timeout("hello world", delay=0.5)
+    await save_with_timeout("hello world", 0.5, "fast DB")
     print()
-    await save_with_timeout("hello world", delay=4.0)
+    await save_with_timeout("hello world", 4.0, "slow DB")
 
 
 asyncio.run(main())

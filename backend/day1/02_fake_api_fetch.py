@@ -28,9 +28,14 @@ import time
 async def notify_user(user_id: int) -> str:
     # TODO:
     # 1. print "notifying user {user_id}..."
+    print(f"notifying user {user_id}....")
+
     # 2. wait a random delay between 0.5 and 2.0 seconds (use random.uniform)
+    await asyncio.sleep(random.uniform(0.5, 2.0))
     # 3. print "user {user_id} notified"
+    print(f"user {user_id} notified")
     # 4. return f"ok:{user_id}"
+    return f"ok:{user_id}"
     pass
 
 
@@ -40,9 +45,11 @@ async def notify_all(user_ids: list[int]):
 
     # TODO: run notify_user() for all user_ids concurrently using asyncio.gather()
     # results = await asyncio.gather(...)
+    results = await asyncio.gather(*[notify_user(uid) for uid in user_ids])
 
     elapsed = time.perf_counter() - start
     # TODO: print total time and results
+    print(f"All notified in {elapsed}")
 
 
 asyncio.run(notify_all([1, 2, 3, 4]))

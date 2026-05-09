@@ -32,23 +32,48 @@ import asyncio
 async def heartbeat(user_id: str):
     # TODO:
     # 1. count = 0, loop forever
+    count = 0
     # 2. increment count, print f"[{user_id}] ping #{count}"
-    # 3. await asyncio.sleep(1)
+    try:
+        while True:
+            count += 1
+            print(f"[{user_id}] ping #{count}")
+            await asyncio.sleep(1)
     # 4. wrap the loop in try/except asyncio.CancelledError
     #    print clean disconnect message and re-raise
+    except asyncio.CancelledError:
+        print(f"[{user_id}] disconnected cleanly")
+        raise
     pass
 
 
 async def main():
     # TODO:
     # 1. Create tasks for user_1 and user_2 using asyncio.create_task()
+    task_user_1 = asyncio.create_task(heartbeat("user_1"))
+    task_user_2 = asyncio.create_task(heartbeat("user_2"))
     # 2. await asyncio.sleep(3)
+    await asyncio.sleep(3)
     # 3. print "Disconnecting user 1..."
+    print("Disconnecting user 1....")
     # 4. Cancel task_1, await it in try/except CancelledError
+    task_user_1.cancel()
+    try:
+        await task_user_1
+    except asyncio.CancelledError:
+        pass
     # 5. await asyncio.sleep(2)
+    await asyncio.sleep(2)
     # 6. print "Disconnecting user 2..."
+    print("Disconnecting user 2....")
     # 7. Cancel task_2, await it in try/except CancelledError
+    task_user_2.cancel()
+    try:
+        await task_user_2
+    except asyncio.CancelledError:
+        pass
     # 8. print "All users disconnected."
+    print("All users disconnected.")
     pass
 
 

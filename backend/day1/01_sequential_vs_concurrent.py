@@ -35,6 +35,7 @@ async def fetch_contacts(user_id: int) -> list:
 
 # --- Part A: Sequential (already done — just run it) ---
 
+
 async def load_profile_sequential(user_id: int):
     start = time.perf_counter()
 
@@ -51,12 +52,17 @@ async def load_profile_sequential(user_id: int):
 # Use asyncio.gather() to run all 3 fetches at the same time.
 # Expected time: ~1s instead of ~3s
 
+
 async def load_profile_concurrent(user_id: int):
     start = time.perf_counter()
 
     # TODO: use asyncio.gather() to fetch all 3 concurrently
     # user, messages, contacts = await asyncio.gather(...)
-    user, messages, contacts = await asyncio.gather(fetch_user_record(user_id), fetch_recent_messages(user_id), fetch_contacts(user_id))
+    user, messages, contacts = await asyncio.gather(
+        fetch_user_record(user_id),
+        fetch_recent_messages(user_id),
+        fetch_contacts(user_id),
+    )
 
     elapsed = time.perf_counter() - start
     # TODO: uncomment when done
