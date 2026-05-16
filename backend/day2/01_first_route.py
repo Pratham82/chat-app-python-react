@@ -35,3 +35,6 @@ async def info():
 
 
 # TODO: add GET /version here
+@app.get("/version")
+async def version():
+    return {"version": "0.1.0", "name": "chat-app"}

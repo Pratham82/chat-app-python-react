@@ -29,6 +29,7 @@
 #   {"detail":"User not found"}
 
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 app = FastAPI(title="Chat App API")
 
@@ -39,13 +40,25 @@ USERS = [
 ]
 
 
+class User(BaseModel):
+    id: int
+    name: str
+    online: bool
+
+
 @app.get("/users/{user_id}")
-async def get_user_by_id(user_id: int):
-    # TODO: find user in USERS by id; raise HTTPException(status_code=404, detail="User not found") if missing
-    pass
+async def get_user_by_id(user_id: int) -> User:
+    user = next((u for u in USERS if u["id"] == user_id), None)
+    if user:
+        return user
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
 
 
 @app.get("/users")
 async def list_users(online: bool | None = None, limit: int = 10):
-    # TODO: filter USERS by online if provided, apply limit, return {"users": [...], "count": N}
-    pass
+    result = (USERS if online is None else [u for u in USERS if u["online"] == online])[
+        :limit
+    ]
+
+    return {"users": result, "count": len(result)}
