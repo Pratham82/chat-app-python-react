@@ -30,6 +30,7 @@
 #   {"id":4,"name":"Diana","email":"diana@example.com","online":false}
 #   {"detail":[{"type":"missing","loc":["body","email"],...}]}  ← 422 Unprocessable Entity
 
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from starlette.status import HTTP_201_CREATED
@@ -45,7 +46,9 @@ USERS: list[dict] = [
 
 class CreateUserRequest(BaseModel):
     # TODO: define fields: name (str), email (str), online (bool = False)
-    pass
+    name: str
+    email: str
+    online: bool = False
 
 
 class UserResponse(BaseModel):
@@ -57,11 +60,23 @@ class UserResponse(BaseModel):
 
 @app.post("/users", response_model=UserResponse, status_code=HTTP_201_CREATED)
 async def create_user(body: CreateUserRequest):
-    # TODO: build new user dict, append to USERS, return it
-    pass
+    new_user = {
+        "id": len(USERS) + 1,
+        "name": body.name,
+        "email": body.email,
+        "online": body.online,
+    }
+
+    USERS.append(new_user)
+
+    return UserResponse(**new_user)
 
 
 @app.get("/users/{user_id}", response_model=UserResponse)
 async def get_user(user_id: int):
-    # TODO: find user by id or raise HTTPException(404)
-    pass
+    user = next((u for u in USERS if u["id"] == user_id), None)
+
+    if user:
+        return UserResponse(**user)
+    else:
+        raise HTTPException(404)
