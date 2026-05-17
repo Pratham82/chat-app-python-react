@@ -46,18 +46,25 @@ MESSAGES = [
 async def get_db():
     # TODO: print "opening DB connection", yield a fake db object (e.g. {}),
     # then print "closing DB connection" in a finally block
-    yield {}
+    print("opening DB connection")
+    try:
+        yield {}
+    finally:
+        print("closing DB connection")
 
 
 def pagination(page: int = 1, page_size: int = 5) -> dict:
     # TODO: return {"offset": (page - 1) * page_size, "limit": page_size, "page": page}
     pass
+    return {"offset": (page - 1) * page_size, "limit": page_size, "page": page}
 
 
 async def get_current_user(x_user_id: str | None = Header(default=None)) -> int:
     # TODO: if x_user_id is None or not a digit, raise 401
     # otherwise return int(x_user_id)
-    pass
+    if x_user_id is None or not x_user_id.isdigit():
+        raise HTTPException(status_code=401, detail="missing or invalid x-user-id")
+    return int(x_user_id)
 
 
 @app.get("/messages")
@@ -67,4 +74,16 @@ async def list_messages(
     db: dict = Depends(get_db),
 ):
     # TODO: slice MESSAGES[offset : offset + limit], return with requested_by and page
-    pass
+
+    # - requires auth (get_current_user)
+    # - uses pagination (pagination)
+    # - uses db (get_db)
+    # - returns a slice of MESSAGES using offset/limit, plus who's asking
+
+    offset, limit = pages["offset"], pages["limit"]
+    if user_id:
+        print()
+        messages = MESSAGES[offset : offset + limit]
+        return {"requested_by": user_id, "page": pages["page"], "messages": messages}
+    else:
+        print()
