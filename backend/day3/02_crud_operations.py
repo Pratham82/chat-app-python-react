@@ -45,24 +45,48 @@ class User(Base):
 Base.metadata.create_all(engine)
 
 
-def create_user(session: Session, username: str, email: str, password_hash: str) -> User:
+def create_user(
+    session: Session, username: str, email: str, password_hash: str
+) -> User:
     # TODO: create User, add to session, commit, refresh, return
-    pass
+    user = User(username=username, email=email, password_hash=password_hash)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
 
 
 def get_user_by_username(session: Session, username: str) -> User | None:
     # TODO: use session.execute(select(User).where(...)) and return scalar result
-    pass
+    # result = session.execute(
+    #     select(User).where(User.username == username)
+    # )
+
+    # return result.scalar_one_or_none()
+
+    return session.execute(select(User).where(User.username == username)).scalar()
 
 
 def update_email(session: Session, username: str, new_email: str) -> User | None:
     # TODO: find user, set user.email, commit, refresh, return
-    pass
+    user = session.execute(select(User).where(User.username == username)).scalar()
+    if user is None:
+        return None
+    user.email = new_email
+    session.commit()
+    session.refresh(user)
+
+    return user
 
 
 def delete_user(session: Session, username: str) -> bool:
     # TODO: find user, session.delete(user), commit, return True; return False if not found
-    pass
+    user = session.execute(select(User).where(User.username == username)).scalar()
+    if user is None:
+        return False
+    session.delete(user)
+    session.commit()
+    return True
 
 
 if __name__ == "__main__":

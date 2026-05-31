@@ -34,6 +34,9 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[str] = mapped_column(DateTime, server_default=func.now())
     # TODO: add email (String, unique, not null)
     # TODO: add password_hash (String, not null)
     # TODO: add created_at (DateTime, server_default=func.now())
