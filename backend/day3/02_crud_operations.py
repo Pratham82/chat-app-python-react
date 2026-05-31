@@ -68,8 +68,7 @@ def get_user_by_username(session: Session, username: str) -> User | None:
 
 
 def update_email(session: Session, username: str, new_email: str) -> User | None:
-    # TODO: find user, set user.email, commit, refresh, return
-    user = session.execute(select(User).where(User.username == username)).scalar()
+    user = get_user_by_username(session, username)
     if user is None:
         return None
     user.email = new_email
@@ -80,8 +79,7 @@ def update_email(session: Session, username: str, new_email: str) -> User | None
 
 
 def delete_user(session: Session, username: str) -> bool:
-    # TODO: find user, session.delete(user), commit, return True; return False if not found
-    user = session.execute(select(User).where(User.username == username)).scalar()
+    user = get_user_by_username(session, username)
     if user is None:
         return False
     session.delete(user)
