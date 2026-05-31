@@ -84,10 +84,10 @@ See `project.md` for the full day-by-day curriculum.
 
 **Exercises**
 
-- [ ] `day3/01_define_models.py`
-- [ ] `day3/02_crud_operations.py`
-- [ ] `day3/03_async_session.py`
-- [ ] `day3/04_alembic_intro.py`
+- [x] `day3/01_define_models.py`
+- [x] `day3/02_crud_operations.py`
+- [x] `day3/03_async_session.py`
+- [x] `day3/04_alembic_intro.py`
 
 **Build**
 
