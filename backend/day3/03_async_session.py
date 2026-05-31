@@ -77,7 +77,11 @@ class UserOut(BaseModel):
 
 async def get_session():
     # TODO: open AsyncSession via SessionLocal(), yield it, close in finally
-    pass
+    async with SessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
 
 
 @app.on_event("startup")
@@ -87,18 +91,34 @@ async def startup():
 
 
 @app.post("/users", response_model=UserOut, status_code=HTTP_201_CREATED)
-async def create_user(body: CreateUserRequest, session: AsyncSession = Depends(get_session)):
+async def create_user(
+    body: CreateUserRequest, session: AsyncSession = Depends(get_session)
+):
     # TODO: hash password with bcrypt, create User, add, commit, refresh, return
-    pass
+    hashed_password = bcrypt.hashpw(body.password.encode("utf-8"), bcrypt.gensalt())
+    new_user = User(
+        username=body.username,
+        password_hash=hashed_password,
+        email=body.email,
+    )
+    session.add(new_user)
+    await session.commit()
+    await session.refresh(new_user)
+    return new_user
 
 
 @app.get("/users")
 async def list_users(session: AsyncSession = Depends(get_session)):
     # TODO: select all users, return {"users": [...]}
-    pass
+    all_users = await session.execute(select(User.id, User.username, User.email))
+    return {"users": all_users.mappings().all()}
 
 
 @app.get("/users/{user_id}", response_model=UserOut)
 async def get_user(user_id: int, session: AsyncSession = Depends(get_session)):
     # TODO: get by primary key or raise 404
-    pass
+    user = await session.get(User, user_id)
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
